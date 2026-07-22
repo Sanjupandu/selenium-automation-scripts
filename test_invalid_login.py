@@ -7,20 +7,21 @@ driver = webdriver.Chrome()
 driver.implicitly_wait(10)
 
 def test_invalid_login():
-    driver.get("https://example.com/login")
+    driver.get("https://magento.softwaretestingboard.com/customer/account/login/")
     
-    # Enter invalid login credentials
-    driver.find_element(By.ID, "username").send_keys("invaliduser")
-    driver.find_element(By.ID, "password").send_keys("wrongpassword")
-    driver.find_element(By.ID, "login-btn").click()
+    # Enter incorrect credentials
+    driver.find_element(By.ID, "email").send_keys("wronguser@example.com")
+    driver.find_element(By.ID, "pass").send_keys("BadPassword123!")
+    driver.find_element(By.ID, "send2").click()
     
-    # Verify the error message is displayed
-    error_element = WebDriverWait(driver, 5).until(
-        EC.visibility_of_element_located((By.ID, "error-message"))
+    # Wait for the red error alert to appear at the top of the page
+    error_message = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "div[data-bind*='message.text']"))
     )
     
-    assert error_element.is_displayed(), "Error message was not displayed!"
-    print("Invalid login test passed!")
+    assert error_message.is_displayed()
+    assert "The account sign-in was incorrect" in error_message.text
+    print("Q2 Passed: Invalid login error displayed correctly.")
 
 test_invalid_login()
 driver.quit()
